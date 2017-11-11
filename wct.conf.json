@@ -1,0 +1,13 @@
+{
+  "verbose": false,
+  "plugins": {
+    "local": {
+      "browsers": [
+        {
+          "browserName": "chrome",
+          "version": "58"
+        }
+      ]
+    }
+  }
+}
