@@ -1,0 +1,29 @@
+{
+  "name": "codetest",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "install": "bower install",
+    "start": "npm install && npm run build && node ./bin/www",
+    "build": "vulcanize elements/my-app.html --inline-script | crisper --html public/my-app.vulcanized.html --js public/my-app.vulcanized.js",
+    "lint": "eslint . --ext js --ignore-path .gitignore, . --ext html --ignore-path .gitignore",
+    "test": "npm run lint && polymer test",
+    "publish": "md-to-pdf README.md README.pdf"
+  },
+  "dependencies": {
+    "body-parser": "~1.17.1",
+    "bower": "^1.8.0",
+    "cookie-parser": "~1.4.3",
+    "cors": "^2.8.3",
+    "crisper": "^2.0.2",
+    "debug": "~2.6.3",
+    "express": "~4.15.2",
+    "express-generator": "^4.15.0",
+    "jade": "~1.11.0",
+    "morgan": "~1.8.1",
+    "sqlite3": "^3.1.8",
+    "vulcanize": "^1.15.4"
+
+  },
+  "devDependencies": {}
+}

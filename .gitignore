@@ -1,0 +1,9 @@
+# Add any directories, files, or patterns you don't want to be tracked by version control
+.idea
+node_modules
+bower_components
+my-app.vulcanized.html
+my-app.vulcanized.js
+npm-debug.log
+README.pdf
+cars

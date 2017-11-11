@@ -1,0 +1,94 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="./my-element.html">
+
+<dom-module id="my-app">
+  <template>
+    <style>
+      :host {
+        --app-primary-color: #4285f4;
+        --app-primary-background-color: #FFFFFF;
+        --app-secondary-color: rgba(0, 0, 0, 0.8);
+        --app-secondary-background-color: #AAAAAA;
+
+        display: block;
+        width: 100vw;
+        height: 100vh;
+        overflow: scroll;
+        background-color: var(--app-secondary-background-color);
+        font-family: 'Roboto', 'Noto', sans-serif;
+      }
+
+      .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 1em;
+        color: var(--app-primary-color);
+        background-color: var(--app-primary-background-color);
+      }
+
+      .content {
+        color: var(--app-secondary-color);
+        margin: 5em auto 0 auto;
+        max-width: 500px;
+      }
+
+      .card {
+        margin: 1em 0;
+        max-width: 500px;
+        background-color: var(--app-primary-background-color);
+      }
+    </style>
+
+    <iron-ajax auto url="{{url}}" handle-as="json" on-response="_carsLoaded" debounce-duration="300">
+    </iron-ajax>
+
+    <div class="header">Car Co.</div>
+    <div class="content">
+      <my-element></my-element>
+      <template is="dom-repeat" items="{{cars}}">
+        <div class="card">
+          <!--TODO add folowing data item.year, item.image, item.price -->
+          <div>
+            <span>{{item.make}}</span>
+            <span>{{item.model}}</span>
+          </div>
+          <div>
+            <span>£{{item.price}}</span>
+            <span>Blah</span>
+          </div>
+        </div>
+      </template>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'my-app',
+
+      properties: {
+        cars: {
+          type: Array,
+          notify: true,
+          reflectToAttribute: true
+        },
+        url: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+          value: '/cars'
+        }
+      },
+
+      observers: [],
+
+      _carsLoaded: function (e) {
+        var data = e.detail.response;
+        this.set('cars', data);
+        this.fire('cars-loaded', { cars: data }, { bubble: true });
+      }
+    });
+  </script>
+</dom-module>
