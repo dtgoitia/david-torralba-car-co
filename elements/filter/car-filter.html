@@ -1,0 +1,85 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="./filter-price.html">
+<link rel="import" href="./filter-makes.html">
+<link rel="import" href="./filter-year.html">
+
+<dom-module id="car-filter">
+  <template>
+    <style>
+      /* shadow DOM styles go here */
+      :host {
+        --primary-color: #408cff;
+        --background-color: #616161;
+        --text-color: rgba(0,0,0,0.8);
+
+        display: inline-block;
+        width: 326px;
+        min-height: 535px;
+        padding-bottom: 2.7em;
+        padding-top: 1em;
+        padding-left: 3.5em;
+        font-family: 'Roboto', 'Noto', Arial, Helvetica, sans-serif;
+        background-color: white;
+        /* box-shadow: 0 5px 15px rgba(32, 32, 32, 0.6); */
+        color: var(--text-color);
+        
+        vertical-align: top;
+      }
+    </style>
+    
+    <div>
+      <h1>Filters</h1>
+      <filter-price></filter-price>
+      <filter-makes makes={{makes}}></filter-makes>
+      <filter-year></filter-year>
+    </div>
+    
+    
+  </template>
+  <script>
+    class CarFilter extends Polymer.Element {
+      static get is() { return "car-filter"; }
+      static get properties() {
+        return {
+          prices: {
+            type: Object,
+            value: {
+              "maxprice": 25000,
+              "price": 20000
+            }
+          },
+          sliderValue: {type: Number, value: 4},
+          makes: {
+            type: Object,
+            value:[
+              { "make": "Benz", "check": false },
+              { "make": "BMW",  "check": true  },
+              { "make": "BMW",  "check": true  },
+              { "make": "BMW",  "check": true  },
+              { "make": "BMW",  "check": true  },
+              { "make": "Audi", "check": false }
+            ]
+          },
+          year: {
+            type: Object,
+            value: [
+              { "year": 2015, "check": false },
+              { "year": 2016, "check": false }
+            ]
+          }
+        }
+      }      
+    }
+    
+    // window.addEventListener('WebComponentsReady', function() {
+    //   console.log('Webcomponents are ready!')
+    //   let slider = document.getElementById('priceSlider');
+    //   console.log('slider:', slider);
+    //   // slider.addEventListener('value-change', function() {
+    //   //   console.log('Im chasa');
+    //   // })
+    // });
+
+    customElements.define(CarFilter.is, CarFilter);
+  </script>
+</dom-module>

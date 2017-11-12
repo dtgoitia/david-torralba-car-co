@@ -1,6 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="./my-element.html">
+<link rel="import" href="./filter/car-filter.html">
 
 <dom-module id="my-app">
   <template>
@@ -47,7 +47,9 @@
 
     <div class="header">Car Co.</div>
     <div class="content">
-      <my-element></my-element>
+
+      <car-filter></car-filter>
+
       <template is="dom-repeat" items="{{cars}}">
         <div class="card">
           <!--TODO add folowing data item.year, item.image, item.price -->
@@ -65,30 +67,33 @@
   </template>
 
   <script>
-    Polymer({
-      is: 'my-app',
-
-      properties: {
-        cars: {
-          type: Array,
-          notify: true,
-          reflectToAttribute: true
-        },
-        url: {
-          type: String,
-          notify: true,
-          reflectToAttribute: true,
-          value: '/cars'
-        }
-      },
-
-      observers: [],
-
-      _carsLoaded: function (e) {
+    class MyApp extends Polymer.Element {
+      static get is() { return "my-app"}
+      static get properties() {
+        return {
+          cars: {
+            type: Array,
+            notify: true,
+            reflectToAttribute: true
+          },
+          url: {
+            type: String,
+            notify: true,
+            reflectToAttribute: true,
+            value: '/cars'
+          }
+        };
+      }
+      static get observers() {
+        return [];
+      }
+      _carsLoaded(e) {
         var data = e.detail.response;
         this.set('cars', data);
         this.fire('cars-loaded', { cars: data }, { bubble: true });
       }
-    });
+    }
+    
+    customElements.define(MyApp.is, MyApp);
   </script>
 </dom-module>

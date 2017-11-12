@@ -1,0 +1,26 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="filter-more">
+  <template>
+    <p on-click="handleClick">More!</p>
+  </template>
+  <script>
+    class FilterMore extends Polymer.Element {
+      static get is() { return "filter-more"; }
+      static get properties() {
+        return {
+          collapsed: {
+            type: Boolean,
+            value: true
+          }
+        }
+      }
+      handleClick() {
+        console.log('iron-collapse!');
+        this.collapsed = !this.collapsed;
+        console.log('this.collapsed:', this.collapsed);
+      }
+    }
+    customElements.define(FilterMore.is, FilterMore);
+  </script>
+</dom-module>

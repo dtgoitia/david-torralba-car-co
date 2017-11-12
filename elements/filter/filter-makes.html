@@ -1,0 +1,125 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/toggle-icon/toggle-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="./filter-more.html">
+
+<dom-module id="filter-makes">
+  <template>
+    <style>
+      ul { list-style-type: none; padding: 0; margin: 0; }
+      li:first-of-type { padding-top: 0; }
+      li { padding: 3px 0; }
+      h3 {
+        margin-top: 1.7em;
+        margin-bottom: 1.8em;
+      }
+      #moreLabel {
+        margin-top: 1.4em;
+      }
+    </style>
+    
+    <h3>Make</h3>
+    <ul>
+      <template is="dom-repeat" items="{{shownMakes}}">
+        <li>
+          <paper-checkbox
+            id={{item.make}}
+            checked={{item.check}}
+            on-click="handleMakeSelection"
+          >
+            {{item.make}}
+          </paper-checkbox>
+        </li>
+      </template>
+    </ul>
+    <div id="moreLabel">
+      <span on-click="handleCollapse">
+        <toggle-icon icon=[[collapseIcon]]></toggle-icon>
+        [[collapseString]]
+      </span>
+    </div>
+  </template>
+  <script>
+    class FilterMakes extends Polymer.Element {
+      static get is() { return "filter-makes"; }
+      static get properties() {
+        return {
+          makes: {
+            type: Array,
+            value:[]
+          },
+          defaultShownMakeAmount: {
+            type: Number,
+            value: 3
+          },
+          shownMakeAmount: { type: Number },
+          shownMakes: {
+            type: Array,
+            value: []
+          },
+          collapsed: {
+            type: Boolean,
+            value: true
+          },
+          collapseIcon: {
+            type: String,
+            value: "expand-more"
+          },
+          collapseString: {
+            type: String,
+            value: "More"
+          }
+        }
+      }
+
+      ready() {
+        super.ready();
+        this.adjustDefaultShownMakeAmount();
+        this.shownMakeAmount = this.defaultShownMakeAmount;
+        this.renderShownMakes();
+      }
+      adjustDefaultShownMakeAmount(){
+        this.makes.length < this.defaultShownMakeAmount
+          ? this.defaultShownMakeAmount = this.makes.length
+          : null
+      }
+
+      // renderShownMakes() updates the array from which the
+      // makes will be rendered shown. Dependes on:
+      //  - defaultShownMakeAmount: amount of makes to show
+      //      when the list is collapsed (collapse=true).
+      //  - make.length: total amount of makes that can be
+      //      shown when the list is opened (collapse=false).
+      //  - collapse: determines whether the make list is
+      //      collapsed (true) or opened (false).
+      renderShownMakes() {
+        let i;
+        const newShownMakes = [];
+        for (i = 0; i < this.shownMakeAmount; i++) {
+          newShownMakes.push(this.makes[i]);
+        }
+        this.shownMakes = newShownMakes;
+      }
+      handleCollapse() {
+        this.collapsed = !this.collapsed;
+        if( this.collapsed === true ) {
+          this.shownMakeAmount = this.defaultShownMakeAmount;
+          this.collapseIcon = "expand-more";
+          this.collapseString = "More";
+        } else {
+          this.shownMakeAmount = this.makes.length;
+          this.collapseIcon = "expand-less";
+          this.collapseString = "Show less";
+        }
+        this.renderShownMakes();
+      }
+      handleMakeSelection(){
+        // Pass this.makes to the parent to update filters
+        console.log('this.makes',this.makes);
+        this.renderShownMakes();
+      }
+    }
+    customElements.define(FilterMakes.is, FilterMakes);
+  </script>
+</dom-module>
