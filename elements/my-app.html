@@ -71,7 +71,7 @@
       <car-list data={{results}}></car-list>
 
     </div>
-    
+
     <div>
       <template is="dom-repeat" items="{{cars}}">
         <div class="card">
@@ -126,14 +126,7 @@
           },
           results: {
             type: Array,
-            value: [
-              { "make": "make", "model":"model", "price":"20000", "year":"year", "milleage":"milleage", "imgUrl":"car-image.png"},
-              { "make": "make", "model":"model", "price":"20000", "year":"year", "milleage":"milleage", "imgUrl":"car-image.png"},
-              { "make": "make", "model":"model", "price":"20000", "year":"year", "milleage":"milleage", "imgUrl":"car-image.png"},
-              { "make": "make", "model":"model", "price":"20000", "year":"year", "milleage":"milleage", "imgUrl":"car-image.png"},
-              { "make": "make", "model":"model", "price":"20000", "year":"year", "milleage":"milleage", "imgUrl":"car-image.png"},
-              { "make": "make", "model":"model", "price":"20000", "year":"year", "milleage":"milleage", "imgUrl":"car-image.png"}
-            ]
+            value: []
           }
         };
       }
@@ -144,7 +137,13 @@
       _carsLoaded(e) {
         var data = e.detail.response;
         this.set('cars', data);
-        this.fire('cars-loaded', { cars: data }, { bubble: true });
+        this.set('results', data);
+        console.log('data:', data);
+        console.log('results:', this.results);
+        // this.fire('cars-loaded', { results: data }, { bubble: true });
+        this.dispatchEvent(new CustomEvent('cars-loaded', { results: data }));
+        console.log('results:', this.results);
+        console.log('_carsLoaded triggered!');
       }
 
       constructor() {
