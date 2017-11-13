@@ -6,18 +6,21 @@
 
 <dom-module id="filter-makes">
   <template>
-    <style>
-      ul { list-style-type: none; padding: 0; margin: 0; }
-      li:first-of-type { padding-top: 0; }
-      li { padding: 3px 0; }
-      h3 {
-        margin-top: 1.7em;
-        margin-bottom: 1.8em;
-      }
-      #moreLabel {
-        margin-top: 1.4em;
-      }
-    </style>
+    
+    <custom-style>
+      <style>
+        ul { list-style-type: none; padding: 0; margin: 0; }
+        li:first-of-type { padding-top: 0; }
+        li { padding: 3px 0; }
+        h3 {
+          margin-top: 1.7em;
+          margin-bottom: 1.8em;
+        }
+        #moreLabel {
+          margin-top: 1.4em;
+        }
+      </style>
+    </custom-style>
     
     <h3>Make</h3>
     <ul>
@@ -39,7 +42,9 @@
         [[collapseString]]
       </span>
     </div>
+
   </template>
+
   <script>
     class FilterMakes extends Polymer.Element {
       static get is() { return "filter-makes"; }
@@ -79,6 +84,7 @@
         this.shownMakeAmount = this.defaultShownMakeAmount;
         this.renderShownMakes();
       }
+
       adjustDefaultShownMakeAmount(){
         this.makes.length < this.defaultShownMakeAmount
           ? this.defaultShownMakeAmount = this.makes.length
@@ -101,6 +107,7 @@
         }
         this.shownMakes = newShownMakes;
       }
+
       handleCollapse() {
         this.collapsed = !this.collapsed;
         if( this.collapsed === true ) {
@@ -114,12 +121,17 @@
         }
         this.renderShownMakes();
       }
+      
       handleMakeSelection(){
-        // Pass this.makes to the parent to update filters
-        console.log('this.makes',this.makes);
+        // Send the data upwards to top parend element, and then call
+        // updateResults() so that <my-app> element calls the API to
+        // update the results based on the new data.
+        this.set('this.makes', this.makes);
         this.renderShownMakes();
+        this.updateResults();
       }
     }
+
     customElements.define(FilterMakes.is, FilterMakes);
   </script>
 </dom-module>

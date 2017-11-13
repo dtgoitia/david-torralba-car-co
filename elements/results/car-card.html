@@ -1,0 +1,101 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<!-- bower install --save PolymerElements/iron-image -->
+
+<dom-module id="car-card">
+  <template>
+    <custom-style>
+      <style>
+        /* shadow DOM styles go here */
+        :host {
+          --primary-color: #408cff;
+          --background-color: #616161;
+          --text-color: rgba(0,0,0,0.8);
+          --border-radius: 5px;
+
+          display: inline-block;
+          margin: 25px;
+          width: 354px;
+          height: 354px;
+          border-radius: var(--border-radius);
+          font-size: 23.2px;
+          font-family: 'Roboto', 'Noto', Arial, Helvetica, sans-serif;
+          background-color: white;
+          box-shadow: 0 5px 15px rgba(32, 32, 32, 0.6);
+          color: var(--text-color);
+        }
+        .data {
+          margin: 0;
+          height: 155px;
+          display: grid;
+          grid-template-columns: 50% auto;
+          grid-template-rows: 45% auto;
+          grid-column-gap: 5%;
+          grid-row-gap: 5%;
+        }
+        iron-image {
+          width: 100%;
+          height: 192px;
+          border-top-left-radius: var(--border-radius);
+          border-top-right-radius: var(--border-radius);
+        }
+        .data > div {
+          align-self: center;
+          justify-self: start;
+          padding: 0;
+          padding-left: 19px;
+        }
+        .col1 { grid-column-start: 1; grid-column-end: 2; }
+        .col2 { grid-column-start: 2; grid-column-end: 3; }
+        .big {
+          font-weight: 400;
+          grid-row-start: 1;
+          grid-row-end: 2;
+        }
+        .small {
+          grid-row-start: 2;
+          grid-row-end: 3;
+          font-size: 0.675em;
+          letter-spacing: -0.5px;
+        }
+      </style>
+    </custom-style>
+    
+    <iron-image src$="../../../assets/[[imgUrl]]" sizing="cover"></iron-image>
+    
+    <div class="data">
+      <div class="big">[[make]] [[model]]</div>
+      <div class="big">£[[price]]</div>
+      <div class="small">[[year]]</div>
+      <div class="small">[[milleage]]</div>
+    </div>
+    
+  </template>
+  <script>
+    class CarCard extends Polymer.Element {
+      static get is() { return "car-card" }
+
+      static get properties() {
+        return {
+          make: { type: String },
+          model: { type: String },
+          price: { type: String },
+          year: { type: String },
+          milleage: { type: String },
+          imgUrl: {type: String}
+        }
+      }
+
+      ready() {
+        super.ready();
+        this.formatPrice();
+      }
+
+      formatPrice() {
+        this.price = numeral(this.price).format('0,0');
+      }
+    }
+
+    customElements.define(CarCard.is, CarCard);
+  </script>
+</dom-module>

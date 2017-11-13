@@ -1,55 +1,78 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="./filter/car-filter.html">
+<link rel="import" href="./results/car-list.html">
 
 <dom-module id="my-app">
   <template>
-    <style>
-      :host {
-        --app-primary-color: #4285f4;
-        --app-primary-background-color: #FFFFFF;
-        --app-secondary-color: rgba(0, 0, 0, 0.8);
-        --app-secondary-background-color: #AAAAAA;
+    <custom-style>
+      <style>
+        :host {
+          --app-primary-color: #4285f4;
+          --app-primary-background-color: #FFFFFF;
+          --app-secondary-color: rgba(0, 0, 0, 0.8);
+          --app-secondary-background-color: #AAAAAA;
 
-        display: block;
-        width: 100vw;
-        height: 100vh;
-        overflow: scroll;
-        background-color: var(--app-secondary-background-color);
-        font-family: 'Roboto', 'Noto', sans-serif;
-      }
+          display: block;
+          margin: 0 auto;
+          padding-bottom: 4em;
+          min-height: 100vh;
+          /* width: 100vw; */
+          /* overflow: scroll; */
+          overflow: visible;
+          background-color: var(--app-secondary-background-color);
+          font-family: 'Roboto', 'Noto', sans-serif;
+        }
 
-      .header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        padding: 1em;
-        color: var(--app-primary-color);
-        background-color: var(--app-primary-background-color);
-      }
+        .header {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          color: var(--app-primary-color);
+          background-color: var(--app-primary-background-color);
+          font-size: 2.2em;
+          padding: 0.9em 1.3em 0.8em;
+          border-bottom: 1.5px solid var(--app-secondary-color);
+          z-index: 1000;
+        }
 
-      .content {
-        color: var(--app-secondary-color);
-        margin: 5em auto 0 auto;
-        max-width: 500px;
-      }
+        .content {
+          color: var(--app-secondary-color);
+          margin: 0 auto 0 auto;
+          padding-top: 9em;
+          max-width: 1300px;
 
-      .card {
-        margin: 1em 0;
-        max-width: 500px;
-        background-color: var(--app-primary-background-color);
-      }
-    </style>
+          display: flex;
+          flex-direction: row;
+          flex-wrap: nowrap;
+          justify-content: center;
+          align-items: flex-start;
+        }
+
+        .card {
+          margin: 1em 0;
+          max-width: 500px;
+          background-color: var(--app-primary-background-color);
+        }
+      </style>
+    </custom-style>
 
     <iron-ajax auto url="{{url}}" handle-as="json" on-response="_carsLoaded" debounce-duration="300">
     </iron-ajax>
 
-    <div class="header">Car Co.</div>
+    <div class="header">Cars Co.</div>
     <div class="content">
+      <car-filter
+        update-results={{updateResults}}
+        filter-data={{filterData}}
+      >
+      </car-filter>
+      <car-list data={{results}}></car-list>
 
-      <car-filter></car-filter>
-
+    </div>
+    
+    <div>
       <template is="dom-repeat" items="{{cars}}">
         <div class="card">
           <!--TODO add folowing data item.year, item.image, item.price -->
@@ -81,16 +104,56 @@
             notify: true,
             reflectToAttribute: true,
             value: '/cars'
+          },
+          filterData: {
+            type: Object,
+            value: {
+              prices: {
+                "max": 25000,
+                "price": 20000,
+                "step": 1000
+              },
+              makes: [
+                { "make": "Benz", "check": false },
+                { "make": "BMW",  "check": false },
+                { "make": "Audi", "check": false }
+              ],
+              years: [
+                { "year": 2015, "check": false },
+                { "year": 2016, "check": false }
+              ]
+            }
+          },
+          results: {
+            type: Array,
+            value: [
+              { "make": "make", "model":"model", "price":"20000", "year":"year", "milleage":"milleage", "imgUrl":"car-image.png"},
+              { "make": "make", "model":"model", "price":"20000", "year":"year", "milleage":"milleage", "imgUrl":"car-image.png"},
+              { "make": "make", "model":"model", "price":"20000", "year":"year", "milleage":"milleage", "imgUrl":"car-image.png"},
+              { "make": "make", "model":"model", "price":"20000", "year":"year", "milleage":"milleage", "imgUrl":"car-image.png"},
+              { "make": "make", "model":"model", "price":"20000", "year":"year", "milleage":"milleage", "imgUrl":"car-image.png"},
+              { "make": "make", "model":"model", "price":"20000", "year":"year", "milleage":"milleage", "imgUrl":"car-image.png"}
+            ]
           }
         };
       }
       static get observers() {
         return [];
       }
+
       _carsLoaded(e) {
         var data = e.detail.response;
         this.set('cars', data);
         this.fire('cars-loaded', { cars: data }, { bubble: true });
+      }
+
+      constructor() {
+        super();
+        this.updateResults = this.updateResults.bind(this);
+      }
+
+      updateResults() {
+        console.log('MyApp.updateResults() called');
       }
     }
     
