@@ -36,7 +36,7 @@
       max={{prices.max}}
       step={{prices.step}}
       value="{{prices.price}}"
-      on-change="handlePriceChange"
+      on-change="formatPrice"
     >
     </paper-slider>
     <div id="priceLabel">£[[priceString]]</div>
@@ -85,16 +85,8 @@
       }
 
       formatPrice(){
-        this.priceString = numeral(this.prices.price).format('0,0');
-      }
-      
-      handlePriceChange(){
-        // Send the data upwards to top parend element, and then call
-        // updateResults() so that <my-app> element calls the API to
-        // update the results based on the new data.
-        this.formatPrice()
-        this.set('this.prices', this.prices);
-        this.updateResults();
+        const newPriceString = numeral(this.prices.price).format('0,0');
+        this.set('priceString', newPriceString);
       }
     }
     

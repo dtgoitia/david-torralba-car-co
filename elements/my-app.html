@@ -61,7 +61,7 @@
     <div class="header">Cars Co.</div>
     <div id="content" class="content">
       <template is="dom-if" if={{filterData}}>
-        <car-filter update-results={{updateResults}} filter-data={{filterData}}></car-filter>
+        <car-filter filter-data={{filterData}}></car-filter>
         <car-list data={{results}}></car-list>
       </template>
     </div>
@@ -94,10 +94,16 @@
         }
       }
 
-      constructor() {
-        super();
-        this.updateResults = this.updateResults.bind(this);
-        this.callUpdateResults = this.callUpdateResults.bind(this);
+      static get observers() {
+        return [
+          'filterDataChanged(filterData.*)'
+        ]
+      }
+
+      filterDataChanged(changes) {
+        // console.log('MyApp.filterDataChanged()\n  changes:', changes);
+        const newUrl = this.getAllUrlParametersFromFilterData(this.filterData);
+        this.set('url', newUrl);
       }
 
       getSingleUrlParameterFromFilterData(data, key) {
@@ -117,10 +123,11 @@
       }
 
       getAllUrlParametersFromFilterData(data) {
-        const filterDataTrimmed = {};
-        filterDataTrimmed.make = this.getSingleUrlParameterFromFilterData(data, 'make');
-        filterDataTrimmed.year = this.getSingleUrlParameterFromFilterData(data, 'year');
-        filterDataTrimmed.price = data.price.price.toString();
+        const filterDataTrimmed = {
+          make: this.getSingleUrlParameterFromFilterData(data, 'make'),
+          year: this.getSingleUrlParameterFromFilterData(data, 'year'),
+          price: data.price.price.toString()
+        };
         return '/api/cars?' + this.serializeQueryObject(filterDataTrimmed);
       }
 
@@ -141,17 +148,6 @@
         return encodeURI(parameterArray.join('&'));
       }
 
-      updateResults() {
-        setTimeout(this.callUpdateResults, 0);
-      }
-
-      callUpdateResults() {
-        const currentFilterData = Object.assign(this.filterData);
-        const urlParameters = this.getAllUrlParametersFromFilterData(currentFilterData);
-        const newUrl = this.getAllUrlParametersFromFilterData(currentFilterData);
-        this.set('url', newUrl);
-      }
-
       getValuesPerKey(objectArray, key) {
         const allMakesNoRepeat = [];
         
@@ -161,7 +157,7 @@
         });
         
         // Eliminate duplicated values
-        allValues.map(value => {
+        allValues.forEach(value => {
           if (value !== null && allMakesNoRepeat.includes(value) === false ) {
             allMakesNoRepeat.push(value);
           }
@@ -178,19 +174,15 @@
       }
 
       getMakeFilterData(makeArray) {
-        return(
-          makeArray.map(make => {
-            return { make: make, check: false };
-          })
-        );
+        return makeArray.map(make => {
+          return { make: make, check: false };
+        });
       }
 
       getYearFilterData(yearArray) {
-        return(
-          yearArray.map(make => {
-            return { year: make, check: false };
-          })
-        );
+        return yearArray.map(make => {
+          return { year: make, check: false };
+        });
       }
 
       getAvailableFilterData(availableData) {
@@ -201,13 +193,13 @@
         });
 
         const priceFilterData = availableFilterData.price ? this.getPriceFilterData(availableFilterData.price) : null;
-        const makeFilterData = availableFilterData.make ? this.getMakeFilterData(availableFilterData.make) : null;
-        const yearFilterData = availableFilterData.year ? this.getYearFilterData(availableFilterData.year) : null;
+        const makeFilterData  = availableFilterData.make  ? this.getMakeFilterData(availableFilterData.make)   : null;
+        const yearFilterData  = availableFilterData.year  ? this.getYearFilterData(availableFilterData.year)   : null;
         
         const returnObject = {};
         priceFilterData !== null ? returnObject.price = priceFilterData : null;
-        makeFilterData !== null ? returnObject.make = makeFilterData : null;
-        yearFilterData !== null ? returnObject.year = yearFilterData : null;
+        makeFilterData  !== null ? returnObject.make  = makeFilterData  : null;
+        yearFilterData  !== null ? returnObject.year  = yearFilterData  : null;
         
         return returnObject;
       }

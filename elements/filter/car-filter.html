@@ -35,46 +35,26 @@
     
     <div>
       <h1 on-click='handleFilterUpdate'>Filters</h1>
-      <filter-price
-        prices={{filterData.price}}
-        update-results={{updateResults}}
-      >
-      </filter-price>
-      <filter-make
-        makes={{filterData.make}}
-        shownMakes={{filterData.make}}
-        update-results={{updateResults}}
-      >
-      </filter-make>
-      <filter-year
-        years={{filterData.year}}
-        update-results={{updateResults}}
-      >
-      </filter-year>
+      <filter-price prices={{filterData.price}}></filter-price>
+      <filter-make makes={{filterData.make}} shown-makes={{filterData.make}}></filter-make>
+      <filter-year years={{filterData.year}}></filter-year>
     </div>
     
   </template>
+
   <script>
+  
     class CarFilter extends Polymer.Element {
       static get is() { return "car-filter"; }
+      
       static get properties() {
         return {
-          filterData:    { type: Object },
-          updateResults: { type: Function }
+          filterData: { type: Object }
         }
-      }
-
-      static get observers() {
-        return [
-          'filterDataChanged(filterData.*)'
-        ]
-      }
-
-      filterDataChanged(changes) {
-        this.updateResults();
       }
     }
 
     customElements.define(CarFilter.is, CarFilter);
+    
   </script>
 </dom-module>

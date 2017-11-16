@@ -70,21 +70,6 @@
           }
         }
       }
-      static get observers() {
-        return [
-          'shownMakesChanged(shownMakes.*)',
-          'makesChanged(makes.*)'
-        ]
-      }
-
-      shownMakesChanged(changes) {
-        this.updateResults();
-      }
-
-      makesChanged(changes) {
-        this.set(changes.path, changes.value);
-        // this.updateResults();
-      }
 
       ready() {
         super.ready();
