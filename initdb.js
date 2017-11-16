@@ -1,7 +1,7 @@
-var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('cars');
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('cars');
 
-var data = [
+const data = [
   {
       make: 'ALFA ROMEO',
       model: '4C',
@@ -161,12 +161,12 @@ var data = [
 db.serialize(function () {
   db.run('begin transaction');
   db.run('drop table if exists cars');
-  db.run('CREATE TABLE cars (make TEXT, model TEXT, price INTEGER, year INTEGER, image TEXT)');
+  db.run('CREATE TABLE cars (make TEXT, model TEXT, price INTEGER, mileage INTEGER, year INTEGER, image TEXT)');
 
-  var stmt = db.prepare('INSERT INTO cars VALUES (?,?,?,?,?)');
-  for (var i = 0; i < data.length; i++) {
-    var car = data[i];
-    stmt.run(car.make, car.model, car.price, car.year, car.image);
+  const stmt = db.prepare('INSERT INTO cars VALUES (?,?,?,?,?,?)');
+  for (let i = 0; i < data.length; i++) {
+    const car = data[i];
+    stmt.run(car.make, car.model, car.price, car.mileage, car.year, car.image);
   }
   stmt.finalize();
   db.run('commit');

@@ -10,7 +10,6 @@ const bodyParser = require('body-parser');
 require('./initdb');
 
 const index = require('./routes/index');
-const cars = require('./routes/cars');
 const apiCars = require('./routes/apiCars');
 const cors = require('cors');
 const app = express();
@@ -30,18 +29,17 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/cars', cars);
 app.use('/api/cars', apiCars);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   const err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
 // error handler
-app.use(function (err, req, res) {
+app.use((err, req, res) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

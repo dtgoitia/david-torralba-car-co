@@ -41,24 +41,15 @@ const queryReqToSqlWhere = (queryObject) => {
 };
 
 /* GET car listing. */
-router.get('/', function (req, res) {
-  console.log('req.path:', req.path);
-  console.log('req.query:', req.query);
-
+router.get('/', (req, res) => {
   let sqlQuery = 'SELECT * FROM cars';
   const whereSql = queryReqToSqlWhere(req.query);
   whereSql ? sqlQuery = sqlQuery + ' WHERE ' + whereSql : null;
   
-  db.all(sqlQuery, function (err, rows) {
-    // console.log('\n-----------------------------------------------------------------------------------------------------------------');
+  db.all(sqlQuery, (err, rows) => {
     // console.log(JSON.stringify(rows, null, 2));
     res.send(rows);
   });
-  
-  // db.all('SELECT make,model,price,year,image FROM cars', function (err, rows) {
-  //   // console.log(JSON.stringify(rows));
-  //   res.send(rows);
-  // });
 });
 
 module.exports = router;
