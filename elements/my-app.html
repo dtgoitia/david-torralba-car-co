@@ -181,7 +181,7 @@
         const currentFilterData = Object.assign(this.filterData);
         // console.log('MyApp.updateResults():\ncurrentFilterData', currentFilterData);
         const urlParameters = this.getAllUrlParametersFromFilterData(currentFilterData);
-        const newUrl = 'http://localhost:3000' + urlParameters;
+        const newUrl = urlParameters;
         console.log('MyApp.callUpdateResults()\nnewUrl', newUrl);
         this.set('url', newUrl);
         // console.log('MyApp.updateResults():\nnewUrl', newUrl);
