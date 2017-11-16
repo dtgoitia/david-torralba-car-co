@@ -17,6 +17,7 @@
           margin: 0 auto;
           padding-bottom: 4em;
           min-height: 100vh;
+          width: 95vw;
           /* width: 100vw; */
           /* overflow: scroll; */
           overflow: visible;
@@ -46,45 +47,25 @@
           display: flex;
           flex-direction: row;
           flex-wrap: nowrap;
-          justify-content: center;
+          justify-content: flex-start;
           align-items: flex-start;
-        }
-
-        .card {
-          margin: 1em 0;
-          max-width: 500px;
-          background-color: var(--app-primary-background-color);
         }
       </style>
     </custom-style>
 
-    <iron-ajax auto url="{{url}}" handle-as="json" on-response="_carsLoaded" debounce-duration="300">
-    </iron-ajax>
+    <iron-ajax
+      auto
+      url={{url}}
+      handle-as="json"
+      on-response="_carsLoaded"
+      debounce-duration="300"
+    ></iron-ajax>
 
     <div class="header">Cars Co.</div>
-    <div class="content">
-      <car-filter
-        update-results={{updateResults}}
-        filter-data={{filterData}}
-      >
-      </car-filter>
-      <car-list data={{results}}></car-list>
-
-    </div>
-
-    <div>
-      <template is="dom-repeat" items="{{cars}}">
-        <div class="card">
-          <!--TODO add folowing data item.year, item.image, item.price -->
-          <div>
-            <span>{{item.make}}</span>
-            <span>{{item.model}}</span>
-          </div>
-          <div>
-            <span>£{{item.price}}</span>
-            <span>Blah</span>
-          </div>
-        </div>
+    <div id="content" class="content">
+      <template is="dom-if" if={{filterData}}>
+        <car-filter update-results={{updateResults}} filter-data={{filterData}}></car-filter>
+        <car-list data={{results}}></car-list>
       </template>
     </div>
   </template>
@@ -94,66 +75,214 @@
       static get is() { return "my-app"}
       static get properties() {
         return {
-          cars: {
+          acceptedFilterKeys: {
             type: Array,
-            notify: true,
-            reflectToAttribute: true
-          },
-          url: {
-            type: String,
-            notify: true,
-            reflectToAttribute: true,
-            value: '/cars'
+            value: ['price', 'make', 'year']
           },
           filterData: {
             type: Object,
-            value: {
-              prices: {
-                "max": 25000,
-                "price": 20000,
-                "step": 1000
-              },
-              makes: [
-                { "make": "Benz", "check": false },
-                { "make": "BMW",  "check": false },
-                { "make": "Audi", "check": false }
-              ],
-              years: [
-                { "year": 2015, "check": false },
-                { "year": 2016, "check": false }
-              ]
-            }
+            observer: 'filterDataChanged'
+          },
+          firstLoad: {
+            type: Boolean,
+            value: true
           },
           results: {
             type: Array,
             value: []
+          },
+          url: {
+            type: String,
+            value: 'http://localhost:3000/api/cars'
           }
-        };
-      }
-      static get observers() {
-        return [];
-      }
-
-      _carsLoaded(e) {
-        var data = e.detail.response;
-        this.set('cars', data);
-        this.set('results', data);
-        console.log('data:', data);
-        console.log('results:', this.results);
-        // this.fire('cars-loaded', { results: data }, { bubble: true });
-        this.dispatchEvent(new CustomEvent('cars-loaded', { results: data }));
-        console.log('results:', this.results);
-        console.log('_carsLoaded triggered!');
+        }
       }
 
       constructor() {
         super();
         this.updateResults = this.updateResults.bind(this);
+        this.callUpdateResults = this.callUpdateResults.bind(this);
+      }
+
+      filterDataChanged(newValue, oldValue) {
+        console.log('MyApp.filterDataChanged()');
+        // console.log('  this.filterData', this.filterData);
+        console.log('  newValue', newValue);
+        console.log('  oldValue', oldValue);
+      }
+
+      getSingleUrlParameterFromFilterData(data, key) {
+        // console.log('getSingleUrlParameterFromFilterData');
+        // console.log('  data:', data);
+        // console.log('  key:', key);
+        // console.log('  data[' + key + ']:', data[key]);
+        const values = [];
+        // filterData[key].map(entry => entry.check ? values.push(entry[key]) : null);
+        
+        const dataValues = data[key];
+        // console.log('  dataValues:', dataValues);
+        // console.log('  dataValues[0]:', dataValues[0]);
+        dataValues.map(entry => {
+          // console.log('  entry:', entry);
+          // console.log('  entry.check:', entry.check);
+          return entry.check ? values.push(entry[key]) : null
+        });
+        // console.log('getSingleUrlParameterFromFilterData\n  values:', values);
+        if ( values.length > 0 ) {
+          const valuesString = values.join(',');
+          // console.log('  valuesString:', valuesString);
+          return valuesString;
+        } else {
+          return null;
+        }
+      }
+
+      getAllUrlParametersFromFilterData(data) {
+
+        // console.log('MyApp.getAllUrlParametersFromFilterData()\ndata:', data);
+        let url = '/api/cars';
+        const filterDataTrimmed = {};
+        filterDataTrimmed.make = this.getSingleUrlParameterFromFilterData(data, 'make');
+        filterDataTrimmed.year = this.getSingleUrlParameterFromFilterData(data, 'year');
+        filterDataTrimmed.price = data.price.price.toString();
+
+        // console.log('getAllUrlParametersFromFilterData.filterDataTrimmed()\nthis.filterData:', this.filterData);
+        // console.log('getAllUrlParametersFromFilterData.filterDataTrimmed()\nfilterDataTrimmed:', filterDataTrimmed);
+
+        // console.log('serializeQueryObject(filterDataTrimmed):', this.serializeQueryObject(filterDataTrimmed));
+        return '/api/cars?' + this.serializeQueryObject(filterDataTrimmed);
+      }
+
+      serializeQueryObject(queryObject) {
+        const parameterArray = [];
+        Object.getOwnPropertyNames(queryObject).map(key => {
+          const value = queryObject[key];
+          if ( value !== null) {
+            let valueString;
+            if (Array.isArray(value)) {
+              valueString = value.join(',');
+            }
+            valueString
+              ? parameterArray.push(key + '=' + valueString)
+              : parameterArray.push(key + '=' + value)
+          }
+        })
+        return encodeURI(parameterArray.join('&'));
       }
 
       updateResults() {
-        console.log('MyApp.updateResults() called');
+        setTimeout(this.callUpdateResults, 0);
+        // this.callUpdateResults()
       }
+      callUpdateResults() {
+        // console.log('MyApp.updateResults() called');
+        // console.log('MyApp.updateResults():\nthis.filterData', this.filterData);
+        console.log('callUpdateResults() called');
+        const currentFilterData = Object.assign(this.filterData);
+        // console.log('MyApp.updateResults():\ncurrentFilterData', currentFilterData);
+        const urlParameters = this.getAllUrlParametersFromFilterData(currentFilterData);
+        const newUrl = 'http://localhost:3000' + urlParameters;
+        console.log('MyApp.callUpdateResults()\nnewUrl', newUrl);
+        this.set('url', newUrl);
+        // console.log('MyApp.updateResults():\nnewUrl', newUrl);
+      }
+
+      getValuesPerKey(objectArray, key) {
+        const allMakesNoRepeat = [];
+        
+        // Get all values associated to passed key
+        const allValues = objectArray.map((object, i) => {
+          return object.hasOwnProperty(key) ? object[key] : null;
+        });
+        
+        // Eliminate duplicated values
+        allValues.map(value => {
+          if (value !== null && allMakesNoRepeat.includes(value) === false ) {
+            allMakesNoRepeat.push(value);
+          }
+        });
+
+        return allMakesNoRepeat.length > 0 ? allMakesNoRepeat : null;
+      }
+
+      getPriceFilterData(priceArray) {
+        const maxPrice = priceArray.reduce((pre, cur) => {
+          return Math.max(pre, cur);
+        });
+        return { max: maxPrice, price: maxPrice, step: 1000 };
+      }
+
+      getMakeFilterData(makeArray) {
+        return(
+          makeArray.map(make => {
+            return { make: make, check: false };
+          })
+        );
+      }
+
+      getYearFilterData(yearArray) {
+        return(
+          yearArray.map(make => {
+            return { year: make, check: false };
+          })
+        );
+      }
+
+      getAvailableFilterData(availableData) {
+        const availableFilterData = {};
+        this.acceptedFilterKeys.map(key => {
+          const values = this.getValuesPerKey(availableData, key);
+          availableFilterData[key] = values;
+        });
+
+        const returnObject = {};
+        const priceFilterData = availableFilterData.price ? this.getPriceFilterData(availableFilterData.price) : null;
+        // console.log('priceFilterData', priceFilterData);
+        const makeFilterData = availableFilterData.make ? this.getMakeFilterData(availableFilterData.make) : null;
+        // console.log('makeFilterData', makeFilterData);
+        const yearFilterData = availableFilterData.year ? this.getYearFilterData(availableFilterData.year) : null;
+        // console.log('yearFilterData', yearFilterData);
+        priceFilterData !== null ? returnObject.price = priceFilterData : null;
+        makeFilterData !== null ? returnObject.make = makeFilterData : null;
+        yearFilterData !== null ? returnObject.year = yearFilterData : null;
+        
+        // console.log('MyApp.getAvailableFilterData():\nreturnObject:', returnObject);
+
+        return returnObject;
+      }
+
+      // ready() {
+      //   super.ready();
+      //   console.log('MyApp.ready()');
+      // }
+
+      _carsLoaded(e) {
+        console.log('MyApp._carsLoaded()')
+        const data = e.detail.response;
+        // console.log('MyApp._carsLoaded()\nreceived data:', data);
+        // console.log('MyApp.filterData:', this.filterData);
+        if (this.firstLoad) {
+          this.set('filterData', this.getAvailableFilterData(data));
+          console.log('MyApp._carsLoaded() > filterData updated');
+          this.set('results', data);
+          console.log('MyApp._carsLoaded() > results updated');
+          this.set('firstLoad', false);
+          console.log('MyApp._carsLoaded() > firstLoad updated');
+        } else {
+          this.set('results', data);
+          console.log('MyApp._carsLoaded() > results updated');
+          // console.log('this.results:', this.results);
+        }
+        // console.log('MyApp.filterData:', this.filterData);
+        // console.log('MyApp.filterData updated');
+      }
+
+      /*  1. On load, fetch all cars
+          2. Get all available makes, prices and years for the filter data
+          3. Call API with desired data:
+            3.1. write function to: filterData => urlParameters
+            - If all make or year are false, show all (only apply price filter)
+      */
     }
     
     customElements.define(MyApp.is, MyApp);

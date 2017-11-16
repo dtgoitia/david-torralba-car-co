@@ -3,8 +3,10 @@
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="./filter-more.html">
+<!-- bower install --save PolymerElements/paper-checkbox -->
+<!-- bower install --save toggle-icon -->
 
-<dom-module id="filter-makes">
+<dom-module id="filter-make">
   <template>
     
     <custom-style>
@@ -19,25 +21,24 @@
         #moreLabel {
           margin-top: 1.4em;
         }
+        #moreLabelClick {
+          cursor: pointer;
+        }
       </style>
     </custom-style>
     
     <h3>Make</h3>
     <ul>
-      <template is="dom-repeat" items="{{shownMakes}}">
+      <template is="dom-repeat" items={{shownMakes}}>
         <li>
-          <paper-checkbox
-            id={{item.make}}
-            checked={{item.check}}
-            on-click="handleMakeSelection"
-          >
+          <paper-checkbox id={{item.make}} checked={{item.check}}>
             {{item.make}}
           </paper-checkbox>
         </li>
       </template>
     </ul>
     <div id="moreLabel">
-      <span on-click="handleCollapse">
+      <span on-click="handleCollapse" id="moreLabelClick">
         <toggle-icon icon=[[collapseIcon]]></toggle-icon>
         [[collapseString]]
       </span>
@@ -46,22 +47,16 @@
   </template>
 
   <script>
-    class FilterMakes extends Polymer.Element {
-      static get is() { return "filter-makes"; }
+    class FilterMake extends Polymer.Element {
+      static get is() { return "filter-make"; }
       static get properties() {
         return {
-          makes: {
-            type: Array,
-            value:[]
-          },
+          makes: { type: Array },
+          shownMakes: { type: Array },
+          shownMakeAmount: { type: Number },
           defaultShownMakeAmount: {
             type: Number,
             value: 3
-          },
-          shownMakeAmount: { type: Number },
-          shownMakes: {
-            type: Array,
-            value: []
           },
           collapsed: {
             type: Boolean,
@@ -77,17 +72,40 @@
           }
         }
       }
+      static get observers() {
+        return [
+          'shownMakesChanged(shownMakes.*)',
+          'makesChanged(makes.*)'
+        ]
+      }
+
+      shownMakesChanged(changes) {
+        console.log('FilterMake.shownMakes has changed', changes);
+        // console.log('  notifying change at', changes.path, 'to', changes.value);
+        // this.notifyPath(changes.path);
+        // this.set(changes.path, changes.value);
+        console.log('    this.shownMakes',this.shownMakes[0]);
+        console.log('    this.makes',this.makes[0]);
+        this.updateResults();
+      }
+
+      makesChanged(changes) {
+        console.log('FilterMake.makes has changed', changes);
+        console.log('  notifying change at', changes.path, 'to', changes.value);
+        this.set(changes.path, changes.value);
+        // this.updateResults();
+      }
 
       ready() {
         super.ready();
         this.adjustDefaultShownMakeAmount();
-        this.shownMakeAmount = this.defaultShownMakeAmount;
+        this.set('shownMakeAmount', this.defaultShownMakeAmount);
         this.renderShownMakes();
       }
 
       adjustDefaultShownMakeAmount(){
         this.makes.length < this.defaultShownMakeAmount
-          ? this.defaultShownMakeAmount = this.makes.length
+          ? this.set('defaultShownMakeAmount', this.makes.length)
           : null
       }
 
@@ -105,33 +123,28 @@
         for (i = 0; i < this.shownMakeAmount; i++) {
           newShownMakes.push(this.makes[i]);
         }
-        this.shownMakes = newShownMakes;
+        this.set('shownMakes', newShownMakes);
       }
 
       handleCollapse() {
-        this.collapsed = !this.collapsed;
+        this.set('collapsed', !this.collapsed);
         if( this.collapsed === true ) {
-          this.shownMakeAmount = this.defaultShownMakeAmount;
-          this.collapseIcon = "expand-more";
-          this.collapseString = "More";
+          this.setProperties({
+            shownMakeAmount: this.defaultShownMakeAmount,
+            collapseIcon: "expand-more",
+            collapseString: "More"
+          });
         } else {
-          this.shownMakeAmount = this.makes.length;
-          this.collapseIcon = "expand-less";
-          this.collapseString = "Show less";
+          this.setProperties({
+            shownMakeAmount: this.makes.length,
+            collapseIcon: "expand-less",
+            collapseString: "Show less"
+          });
         }
         this.renderShownMakes();
       }
-      
-      handleMakeSelection(){
-        // Send the data upwards to top parend element, and then call
-        // updateResults() so that <my-app> element calls the API to
-        // update the results based on the new data.
-        this.set('this.makes', this.makes);
-        this.renderShownMakes();
-        this.updateResults();
-      }
     }
 
-    customElements.define(FilterMakes.is, FilterMakes);
+    customElements.define(FilterMake.is, FilterMake);
   </script>
 </dom-module>

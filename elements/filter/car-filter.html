@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="./filter-price.html">
-<link rel="import" href="./filter-makes.html">
+<link rel="import" href="./filter-make.html">
 <link rel="import" href="./filter-more.html">
 <link rel="import" href="./filter-year.html">
 
@@ -37,17 +37,18 @@
     <div>
       <h1 on-click='handleFilterUpdate'>Filters</h1>
       <filter-price
-        prices={{filterData.prices}}
+        prices={{filterData.price}}
         update-results={{updateResults}}
       >
       </filter-price>
-      <filter-makes
-        makes={{filterData.makes}}
+      <filter-make
+        makes={{filterData.make}}
+        shownMakes={{filterData.make}}
         update-results={{updateResults}}
       >
-      </filter-makes>
+      </filter-make>
       <filter-year
-        years={{filterData.years}}
+        years={{filterData.year}}
         update-results={{updateResults}}
       >
       </filter-year>
@@ -62,6 +63,19 @@
           filterData:    { type: Object },
           updateResults: { type: Function }
         }
+      }
+
+      static get observers() {
+        return [
+          // Observer method name, followed by a list of dependencies, in parenthesis
+          'filterDataChanged(filterData.*)'
+        ]
+      }
+
+      filterDataChanged(changes) {
+        // console.log('CarFilter.filterDataChanged()', changes);
+        // console.log('  notifying change at', changes.path, 'to', changes.value);
+        this.updateResults();
       }
     }
 

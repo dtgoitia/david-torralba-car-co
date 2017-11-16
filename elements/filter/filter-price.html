@@ -54,8 +54,8 @@
         }
       }
 
-      ready() {
-        super.ready();
+      connectedCallback () {
+        this.formatSlider();
         this.formatSliderKnob();
         this.formatPrice();
         this.formatSlider();
@@ -64,12 +64,9 @@
       formatSlider(){
         const sliderNode = document
           .querySelector('my-app').shadowRoot
-          .querySelector('car-filter')
-          .shadowRoot
-          .querySelector('filter-price')
-          .shadowRoot
-          .querySelector('paper-slider')
-          .shadowRoot
+          .querySelector('car-filter').shadowRoot
+          .querySelector('filter-price').shadowRoot
+          .querySelector('paper-slider').shadowRoot
           .querySelector('#sliderContainer');
         sliderNode.style.marginLeft = "0px";
         sliderNode.style.marginRight = "0px";

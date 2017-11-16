@@ -11,7 +11,12 @@
           --text-color: rgba(0,0,0,0.8);
           --border-radius: 5px;
 
-          display: inline-block;
+          /* display: inline-block; */
+          display: inline-flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          align-items: center;
           /* border: 5px var(--primary-color) solid; */
           margin: 0;
           max-width: 850px;
@@ -25,7 +30,7 @@
         model={{item.model}}
         price={{item.price}}
         year={{item.year}}
-        milleage={{item.milleage}}
+        mileage={{item.mileage}}
         image={{item.image}}
       >
       </car-card>

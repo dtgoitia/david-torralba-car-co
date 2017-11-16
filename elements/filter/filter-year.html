@@ -22,7 +22,6 @@
           <paper-checkbox
             id={{item.year}}
             checked={{item.check}}
-            on-click="handleYearSelection"
           >
             [[item.year]]
           </paper-checkbox>
@@ -40,14 +39,6 @@
           years: { type: Object },
           updateResults: { type: Function }
         }
-      }
-
-      handleYearSelection(){
-        // Send the data upwards to top parend element, and then call
-        // updateResults() so that <my-app> element calls the API to
-        // update the results based on the new data.
-        this.set('this.years', this.years);
-        this.updateResults();
       }
     }
 
