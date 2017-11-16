@@ -8,7 +8,6 @@
   <template>
     <custom-style>
       <style>
-        /* shadow DOM styles go here */
         :host {
           --primary-color: #408cff;
           --background-color: #616161;
@@ -67,14 +66,11 @@
 
       static get observers() {
         return [
-          // Observer method name, followed by a list of dependencies, in parenthesis
           'filterDataChanged(filterData.*)'
         ]
       }
 
       filterDataChanged(changes) {
-        // console.log('CarFilter.filterDataChanged()', changes);
-        // console.log('  notifying change at', changes.path, 'to', changes.value);
         this.updateResults();
       }
     }

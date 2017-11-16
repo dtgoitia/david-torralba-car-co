@@ -3,8 +3,6 @@
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="./filter-more.html">
-<!-- bower install --save PolymerElements/paper-checkbox -->
-<!-- bower install --save toggle-icon -->
 
 <dom-module id="filter-make">
   <template>
@@ -80,18 +78,10 @@
       }
 
       shownMakesChanged(changes) {
-        console.log('FilterMake.shownMakes has changed', changes);
-        // console.log('  notifying change at', changes.path, 'to', changes.value);
-        // this.notifyPath(changes.path);
-        // this.set(changes.path, changes.value);
-        console.log('    this.shownMakes',this.shownMakes[0]);
-        console.log('    this.makes',this.makes[0]);
         this.updateResults();
       }
 
       makesChanged(changes) {
-        console.log('FilterMake.makes has changed', changes);
-        console.log('  notifying change at', changes.path, 'to', changes.value);
         this.set(changes.path, changes.value);
         // this.updateResults();
       }
