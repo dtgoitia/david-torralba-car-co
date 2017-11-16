@@ -1,19 +1,19 @@
 
-var express = require('express');
-var path = require('path');
+const express = require('express');
+const path = require('path');
 // uncomment after placing your favicon in /public
-// var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 
 require('./initdb');
 
-var index = require('./routes/index');
-var cars = require('./routes/cars');
-var apiCars = require('./routes/apiCars');
-var cors = require('cors');
-var app = express();
+const index = require('./routes/index');
+const cars = require('./routes/cars');
+const apiCars = require('./routes/apiCars');
+const cors = require('cors');
+const app = express();
 
 app.use(cors());
 app.options('*', cors());
@@ -23,7 +23,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
-// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -36,7 +36,7 @@ app.use('/api/cars', apiCars);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  var err = new Error('Not Found');
+  const err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
