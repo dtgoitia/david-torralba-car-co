@@ -1,7 +1,7 @@
-var express = require('express');
-var router = express.Router();
-var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('cars');
+const express = require('express');
+const router = express.Router();
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('cars');
 
 const getParamValues = (queryObject, paramKey) => {
   if(queryObject[paramKey]) {
@@ -42,6 +42,8 @@ const queryReqToSqlWhere = (queryObject) => {
 
 /* GET car listing. */
 router.get('/', function (req, res) {
+  console.log('req.path:', req.path);
+  console.log('req.query:', req.query);
 
   let sqlQuery = 'SELECT * FROM cars';
   const whereSql = queryReqToSqlWhere(req.query);
